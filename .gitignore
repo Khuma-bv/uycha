@@ -24,3 +24,5 @@ appsettings.*.json
 ## Ignore system files
 Thumbs.db
 .DS_Store
+
+publish.zip

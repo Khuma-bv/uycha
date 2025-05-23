@@ -1,0 +1,438 @@
+﻿@using Microsoft.AspNetCore.Identity
+@model IEnumerable<Property>
+
+<!-- Font Awesome and jQuery -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<script src="https://kit.fontawesome.com/a076d05399.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg sticky-top navbar-light">
+    <div class="container">
+        <a class="navbar-brand" href="#">
+            <img src="@Url.Content("~/images/uycha_kochmasmulk.png")" alt="Logo" width="124" height="90px" />
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul class="navbar-nav ms-auto">              
+                <li class="nav-item"><a class="nav-link btn btn-outline-info filter-button"><i class="fas fa-filter"></i>Filtrlash</a></li>
+                <li class="nav-item"><a class="nav-link btn" asp-action="Index">Bosh sahifa</a></li>
+                <li class="nav-item"><a class="nav-link btn" asp-action="AllProperties">Barcha e'lonlar</a></li>
+                <li class="nav-item"><a class="nav-link btn" asp-action="Create">E'lon joylash</a></li>
+                <li class="nav-item"><a class="nav-link btn btn-outline-primary">Mening akkauntim</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Filter Modal and Button -->
+
+<div id="filter-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9998;">
+    <div style="background:white; margin:10% auto; padding:20px; border-radius:10px; width:90%; max-width:500px;">
+        <h4>Filtr</h4>
+        <form id="filter-form">
+            <select name="city" class="form-control mb-2" required>
+                <option value="">Shahar (barchasi)</option>
+                <option value="Toshkent">Toshkent</option>
+                <option value="Samarqand">Samarqand</option>
+                <option value="Buxoro">Buxoro</option>
+                <option value="Andijon">Andijon</option>
+                <option value="Namangan">Namangan</option>
+                <option value="Fargona">Fargʻona</option>
+                <option value="Jizzax">Jizzax</option>
+                <option value="Navoiy">Navoiy</option>
+                <option value="Xorazm">Xorazm</option>
+                <option value="Qashqadaryo">Qashqadaryo</option>
+                <option value="Surxondaryo">Surxondaryo</option>
+                <option value="Sirdaryo">Sirdaryo</option>
+                <option value="Qoraqalpog‘iston">Qoraqalpog‘iston</option>
+            </select>
+
+            <input name="minPrice" type="number" min="0" placeholder="Narxdan ($)" class="form-control mb-2" />
+            <input name="maxPrice" type="number" min="0" placeholder="Narxgacha ($)" class="form-control mb-2" />
+
+            <select name="propertyType" class="form-control mb-2">
+                <option value="">Obyekt Turi (barchasi)</option>
+                <option value="Apartment">Kvartira</option>
+                <option value="LandHouse">Hovli</option>
+                <option value="Commercial">Tijorat</option>
+                <option value="Land">Yer</option>
+            </select>
+
+            <select name="listingType" class="form-control mb-2">
+                <option value="">Sotuv/Ijara</option>
+                <option value="Sale">Sotuv</option>
+                <option value="Rent">Ijara</option>
+            </select>
+
+            <input name="minRooms" type="number" min="1" placeholder="Xonalar miqdori (minimum)" class="form-control mb-2" />
+            <input name="maxRooms" type="number" min="1" placeholder="Xonalar miqdori (maksimum)" class="form-control mb-2" />
+
+            <div class="form-check">
+                <input type="checkbox" name="hasElevator" value="true" class="form-check-input" id="elevatorCheck">
+                <label class="form-check-label" for="elevatorCheck">Lift</label>
+            </div>
+            <div class="form-check">
+                <input type="checkbox" name="hasBalcony" value="true" class="form-check-input" id="balconyCheck">
+                <label class="form-check-label" for="balconyCheck">Balkon</label>
+            </div>
+            <div class="form-check">
+                <input type="checkbox" name="hasFurniture" value="true" class="form-check-input" id="furnitureCheck">
+                <label class="form-check-label" for="furnitureCheck">Jihozlangan</label>
+            </div>
+            <div class="form-check">
+                <input type="checkbox" name="hasParking" value="true" class="form-check-input" id="parkingCheck">
+                <label class="form-check-label" for="parkingCheck">Parkovka</label>
+            </div>
+            <div class="form-check">
+                <input type="checkbox" name="hasHeating" value="true" class="form-check-input" id="heatingCheck">
+                <label class="form-check-label" for="heatingCheck">Isitish tizimi</label>
+            </div>
+            <div class="form-check">
+                <input type="checkbox" name="isPremium" value="true" class="form-check-input" id="premiumCheck">
+                <label class="form-check-label" for="premiumCheck">Premium</label>
+            </div>
+            <div class="form-check mb-2">
+                <input type="checkbox" name="isNegotiable" value="true" class="form-check-input" id="negotiableCheck">
+                <label class="form-check-label" for="negotiableCheck">Narxi kelishiladi</label>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Qidirish</button>
+            <button type="button" id="reset-filter" class="btn btn-warning text-white w-100 mt-2">Sbros</button>
+
+        </form>
+
+    </div>
+</div>
+
+
+<!-- Property Cards Grid -->
+<div id="propertiesContainer" class="container mb-2">
+    <div id="propertiesRow" class="row mt-2 d-flex">
+        @foreach (var property in Model)
+        {
+            <div class="col-md-3 col-sm-6 d-flex mb-4 position-relative">
+                <div class="position-relative w-100">
+                    @if (User.IsInRole("Admin") || property.UserId == ViewBag.UserId)
+                    {
+                        <form asp-action="Delete" asp-route-id="@property.Id" method="post"
+                              class="position-absolute top-0 end-0 m-2" style="z-index: 10;">
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Rostdan ham ushbu e\'lonni o‘chirmoqchimisiz?');">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    }
+                <a href="#" class="text-decoration-none w-100" data-bs-toggle="modal" data-bs-target="#modal-@property.Id">
+                    <div class="card m-1 shadow d-flex flex-column property-card" data-city="@property.City"
+                         data-price="@property.Price"
+                         data-propertytype="@((int)property.PropertyType)"
+                         data-listingtype="@((int)property.ListingType)">
+                        @{
+                            var firstImage = property.ImagePaths?.Split(';').FirstOrDefault() ?? "uploads/default.png"; 
+                        }
+                        <img src="@Url.Content("~/"+firstImage)" alt="House Image" class="d-block w-100">
+                        <div class="card-body d-flex flex-column">
+                            @if (property.IsPremium)
+                            {
+                                <div class="premium-badge">PREMIUM</div>
+                            }
+                            <h5 class="card-title cost" style="font-weight: 800;">
+                                $@property.Price |
+                                <span style="font-weight: bolder; font-size: smaller">@property.City</span>
+                            </h5>
+                            <p class="card-text">
+                                @property.Rooms xona | @property.Floor-qavat | @property.Area m² | @property.Address
+                            </p>
+                        </div>
+                    </div>
+                </a>
+                </div>
+            </div>
+
+            <div class="modal fade" id="modal-delete-@property.Id" tabindex="-1" aria-labelledby="modalLabel-delete-@property.Id" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalLabel-delete-@property.Id">Удалить карточку</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            E'lonni o'chirishni xohlasizmi?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bekor qilish</button>
+                            <form action="@Url.Action("Delete", "Properties", new { id = property.Id })" method="post">
+                                <button type="submit" class="btn btn-danger">O'chirish</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Модальное окно для каждого property -->
+            <div class="modal fade" id="modal-@property.Id" data-lat="@property.Latitude" data-lng="@property.Longitude" tabindex="-1" aria-labelledby="modalLabel-@property.Id" aria-hidden="true">
+                <div class="modal-dialog modal-lg mt-7">
+                    <div class="modal-content p-5">
+                        <div class="text-end mb-2">
+                            <a href="#" class="btn btn-lg btn-light" data-bs-dismiss="modal">
+                                <i class="fas fa-x text-dark"></i>
+                            </a>
+                        </div>
+
+                        <!-- Слайдер изображений -->
+                        @{
+                            var images = property.ImagePaths?.Split(';') ?? new string[0];
+                        }
+                        <div id="carousel-@property.Id" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-indicators">
+                                @for (int i = 0; i < images.Length; i++)
+                                {
+                                    <button type="button" class="@(i == 0 ? "active" : "")" data-bs-slide-to="@i"
+                                            data-bs-target="#carousel-@property.Id" aria-label="Slide @(i+1)">
+                                    </button>
+                                }
+                            </div>
+                            <div class="carousel-inner">
+                                @for (int i = 0; i < images.Length; i++)
+                                {
+                                    <div class="carousel-item @(i == 0 ? "active" : "")">
+                                        <img src="@Url.Content("~/"+images[i])" alt="Property Image" class="d-block w-100">
+                                    </div>
+                                }
+                            </div>
+                            <button class="carousel-control-prev" type="button" data-bs-slide="prev" data-bs-target="#carousel-@property.Id">
+                                <span class="carousel-control-prev-icon"></span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-slide="next" data-bs-target="#carousel-@property.Id">
+                                <span class="carousel-control-next-icon"></span>
+                            </button>
+                        </div>
+
+                        <!-- Информация о доме -->
+                        <div class="container mt-4">
+                            <h4 class="text-center">Qo'shimcha ma'lumotlar</h4>
+                            <p>@property.Description</p>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <ul class="list-group list-group-flush lh-lg">
+                                        <li class="list-group-item"><strong>Shahar: </strong>@property.City</li>
+                                        <li class="list-group-item"><strong>Manzil: </strong>@property.Address</li>
+                                        <li class="list-group-item"><strong>Hajmi: </strong>@property.Area m²</li>
+                                        <li class="list-group-item"><strong>Xonalar soni: </strong>@property.Rooms</li>
+                                        <li class="list-group-item"><strong>Qavat: </strong>@property.Floor</li>
+                                        <li class="list-group-item text-success" style="font-size: larger;"><strong>Narxi: </strong>$@property.Price</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul class="list-group list-group-flush lh-lg">
+                                        <li class="list-group-item">
+                                            <strong>Turi: </strong> @{
+                                                string typeUz = property.PropertyType switch
+                                                {
+                                                    PropertyType.Apartment => "Kvartira",
+                                                    PropertyType.LandHouse => "Hovli",
+                                                    PropertyType.Commercial => "Tijorat bino",
+                                                    PropertyType.Land => "Yer maydoni",
+                                                    _ => "Noma'lum"
+                                                };
+                                            }
+                                            @typeUz
+                                        </li>
+                                        <li class="list-group-item">
+                                            <strong>E'lon turi: </strong> @{
+                                                string listingUz = property.ListingType switch
+                                                {
+                                                    ListingType.Sale => "Sotuv",
+                                                    ListingType.Rent => "Ijara",
+                                                    _ => "Noma'lum"
+                                                };
+                                            }
+                                            @listingUz
+                                        </li>
+                                        @if (property.ListingType == ListingType.Rent && property.RentDuration.HasValue)
+                                        {
+                                            <li class="list-group-item">
+                                                <strong>Ijara muddati: </strong>@{
+                                                    string rentUz = property.RentDuration switch
+                                                    {
+                                                        RentDuration.Daily => "Kunlik",
+                                                        RentDuration.Weekly => "Haftalik",
+                                                        RentDuration.Monthly => "Oylik",
+                                                        RentDuration.Yearly => "Yillik",
+                                                    };
+                                                }
+                                                @rentUz
+                                            </li>
+                                        }
+                                        <li class="list-group-item"><strong>Balkon: </strong>@(property.HasBalcony ? "Bor" : "Yo'q")</li>
+                                        <li class="list-group-item"><strong>Jihozlangan: </strong>@(property.HasFurniture ? "Bor" : "Yo'q")</li>
+                                        <li class="list-group-item"><strong>Isitish: </strong>@(property.HasHeating ? "Bor" : "Yo'q")</li>
+                                        <li class="list-group-item"><strong>Parkovka: </strong>@(property.HasParking ? "Bor" : "Yo'q")</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div id="map-@property.Id" style="height: 300px;" class="rounded mt-4"></div>
+                            <div class="text-center mt-4">
+                                <a href="tel:@property.PhoneNumber" class="btn call btn-outline-success m-2 btn-lg">📞 Telefon</a>
+                                @if (!string.IsNullOrEmpty(property.TelegramLink))
+                                {
+                                    <a href="https://t.me/@property.TelegramLink" class="btn btn-outline-primary m-2 btn-lg">
+                                        <i class="fab fa-telegram"></i> Telegram
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- "Load More" Button -->
+<div class="container">
+    <div class="row">
+        <div class="col text-center">
+            <button id="loadMoreButton" class="btn w-25 btn-primary my-4">Yana</button>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Footer -->
+<footer class="footer bg-dark text-white py-5 mt-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-4 m-3">
+                <h5>Uycha</h5>
+                <p>Xumoyun Bolikulov tomonidan yasalgan ped-proyekt.</p>
+            </div>
+            <div class="col-md-4 m-3">
+                <h5>Kontaktlar</h5>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-phone-alt"></i> Telefon: +998990614497</li>
+                    <li><i class="fas fa-envelope"></i> Email: khumoyunbvb@gmail.com</li>
+                    <li><i class="fas fa-map-marker-alt"></i> Toshkent, O'zbekiston</li>
+                </ul>
+            </div>
+        </div>
+        <div class="text-center mt-4">
+            <a href="#" class="text-white mx-2"><i class="fab fa-facebook"></i></a>
+            <a href="#" class="text-white mx-2"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="text-white mx-2"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="text-white mx-2"><i class="fab fa-linkedin"></i></a>
+        </div>
+    </div>
+</footer>
+
+
+<!-- JavaScript: Load more pagination -->
+<script>
+    let currentPage = 1;
+    $("#loadMoreButton").click(function () {
+        currentPage++;
+        $.ajax({
+            url: '/Properties/LoadMore',
+            type: 'GET',
+            data: { page: currentPage },
+            success: function (data) {
+                if (!data || data.trim().length === 0) {
+                    $("#loadMoreButton").hide();
+                } else {
+                    $("#propertiesRow").append(data);
+                    rebindModals(); // на всякий случай
+                }
+            },
+            error: function () {
+                alert('Serverda hatolik yuz berdi');
+            }
+        });
+    });
+
+        function rebindModals() {
+        const modalButtons = document.querySelectorAll('[data-bs-toggle="modal"]');
+        modalButtons.forEach(button => {
+            button.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = button.getAttribute('data-bs-target');
+                const modalEl = document.querySelector(target);
+                if (modalEl) {
+                    const modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
+                    modalInstance.show();
+
+                    // Карта внутри модалки
+                    const lat = modalEl.getAttribute('data-lat');
+                    const lng = modalEl.getAttribute('data-lng');
+                    const mapDiv = modalEl.querySelector('[id^="map-"]');
+
+                    if (lat && lng && mapDiv && !mapDiv.dataset.loaded) {
+                        setTimeout(() => {
+                        const map = L.map(mapDiv.id).setView([parseFloat(lat), parseFloat(lng)], 15);
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '© OpenStreetMap'
+                    }).addTo(map);
+                    L.marker([parseFloat(lat), parseFloat(lng)]).addTo(map);
+                        mapDiv.dataset.loaded = "true";
+                    }, 300);
+                }
+                }
+            });
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        rebindModals();
+    });
+
+    document.querySelector(".filter-button").addEventListener("click", function () {
+        document.getElementById("filter-modal").style.display = "block";
+    });
+
+    document.getElementById("filter-modal").addEventListener("click", function (e) {
+        if (e.target === this) {
+            this.style.display = "none";
+        }
+    });
+
+    // Отправка фильтра
+    document.getElementById("filter-form").addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        const params = new URLSearchParams();
+        for (let [key, value] of formData.entries()) {
+            if (value) params.append(key, value);
+        }
+
+        const res = await fetch("/Properties/FilteredCards?" + params.toString());
+        const html = await res.text();
+
+        document.getElementById("propertiesRow").innerHTML = html;
+        document.getElementById("loadMoreButton").style.display = "none";
+        document.getElementById("filter-modal").style.display = "none";
+
+        rebindModals(); 
+    });
+
+    // Сброс фильтров
+    document.getElementById("reset-filter").addEventListener("click", async function () {
+        const form = document.getElementById("filter-form");
+        form.reset();
+
+        const res = await fetch("/Properties/FilteredCards");
+        const html = await res.text();
+
+        document.getElementById("propertiesRow").innerHTML = html;
+        document.getElementById("loadMoreButton").style.display = "block";
+        document.getElementById("filter-modal").style.display = "none";
+
+        rebindModals();
+    });
+</script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

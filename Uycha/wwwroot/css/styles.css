@@ -1,0 +1,229 @@
+@charset "UTF-8";
+carousel {
+  height: 30rem;
+}
+
+.header {
+  background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.5)), url("../images/header.jpeg") center center no-repeat;
+  background-size: cover;
+  height: 550px;
+}
+
+.form-position {
+  position: absolute;
+  top: 80%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50%;
+}
+
+.filter-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #00d1b2;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 55px;
+    height: 55px;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    z-index: 9999;
+}
+
+.premium-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: gold;
+    color: black;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+#headerbtn {
+  background-color: rgb(38, 207, 185);
+}
+
+#mu {
+  font-weight: bold;
+  color: rgb(38, 207, 185);
+}
+
+.custom-shadow {
+  box-shadow: 0px 0px 25px rgba(47, 213, 235, 0.63);
+}
+
+.form-control:focus {
+  box-shadow: none !important;
+  border-color: #ced4da; /* Устанавливаем стандартный бордер */
+}
+
+.card {
+    /* Можно поменять на нужный размер */
+    overflow: hidden; /* Чтобы контент не выходил за границы */
+    position: relative;
+}
+
+/* Фон для футера */
+.footer {
+    position: relative;
+    background-image: url('https://cdn.vectorstock.com/i/500p/99/46/background-with-city-for-web-site-footer-vector-21099946.avif'); /* Укажи путь к своему изображению */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: brightness(90%); /* Уменьшаем яркость фонового изображения */
+    padding: 50px 0;
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Центрируем элементы по горизонтали */
+    text-align: center; /* Выравнивание текста по центру */
+}
+
+    /* Полупрозрачный слой для улучшения контраста */
+.footer::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6); /* Полупрозрачный фон */
+    z-index: 1;
+}
+
+/* Стили для текста и элементов в футере */
+.footer .container {
+    position: relative;
+    z-index: 2;
+    color: white; /* Белый цвет текста */
+    padding-left: 0; /* Убираем отступ слева */
+    padding-right: 0; /* Убираем отступ справа */
+    width: 100%; /* Убираем ограничение по ширине */
+}
+
+/* Ссылки и другие элементы футера */
+.footer h5, .footer p, .footer li {
+    color: white; /* Белый цвет для заголовков, абзацев и списков */
+}
+
+.footer a {
+    text-decoration: none;
+    color: #ffffff; /* Белый цвет для ссылок */
+}
+
+.footer a:hover {
+    color: #f1f1f1; /* Цвет при наведении */
+}
+
+/* Социальные иконки */
+.footer .text-center a {
+    font-size: 24px;
+    color: white; /* Белый цвет для иконок социальных сетей */
+}
+
+.footer .text-center a:hover {
+    color: #ddd; /* Цвет при наведении */
+}
+
+.carousel-inner {
+  height: 400px; /* Фиксируем высоту карусели */
+}
+
+.carousel-item img {
+  height: 60%; /* Заполняет весь блок */
+  object-fit: cover; /* Обрезает изображение, чтобы оно заполнило всю высоту */
+}
+
+.more-button {
+  width: 75%;
+}
+
+@media (max-width: 992px) {
+  /*.xl-text {
+    font-size: 50 px;
+  }*/
+  .header {
+    text-align: center;
+    height: 400px;
+  }
+  .form-position {
+    top: auto;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+  }
+ 
+  .card-text {
+    font-size: smaller;
+    font-weight: bold;
+  }
+
+  .navbar {
+    padding-top: 0.3rem;
+    padding-bottom: 0.3rem;
+}
+
+  
+}
+@media (max-width: 768px) {
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .col-md-3 {
+    flex: 0 0 50%; /* 50% ширины экрана */
+    max-width: 50%;
+  }
+  .card {
+    width: 100%; /* Чтобы карточка занимала всю доступную ширину колонки */
+  }
+  .carousel-inner {
+    height: 280px; /* Фиксируем высоту карусели */
+  }
+}
+@media (min-width: 768px) { /* sm и больше */
+  .more-button {
+    width: 30%;
+  }
+}
+@media (min-width: 992px) { /* lg и больше */
+  .header {
+    background-position: center;
+    height: 30rem;
+  }
+  .card-text {
+    font-weight: bold;
+    font-size: medium;
+  }
+
+    .card img {
+        height: 190px;
+        object-fit: cover;
+    }
+}
+
+@media (min-width: 1200px) {
+    .container {
+        /*max-width: 1700px;*/
+        max-width: 100%;
+    }
+}
+
+
+
+@media (max-width: 992px) {
+    .card img {
+        height: 120px;
+        object-fit: cover;
+    }
+}

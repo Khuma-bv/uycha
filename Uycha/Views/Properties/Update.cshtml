@@ -1,0 +1,137 @@
+﻿@model Uycha.ViewModels.PropertyViewModel;
+
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<h1>O`zgartirish jarayoni</h1>
+
+<form asp-action="Update" asp-controller="HousesForSale" enctype="multipart/form-data">
+    <input type="hidden" asp-for="Id" />
+    <div class="container mt-4">
+        <h2 class="mb-4">Uy sotish uchun post yaratish</h2>
+
+          
+
+            <!-- City -->
+            <div class="mb-3">
+                <label asp-for="City" class="form-label fw-bold">Shahar</label>
+                <select asp-for="City" class="form-select">
+                    <option value="" disabled selected>Shahar tanlang</option>
+                    <option value="Toshkent">Toshkent</option>
+                    <option value="Samarqand">Samarqand</option>
+                    <option value="Buxoro">Buxoro</option>
+                    <option value="Fargona">Farg`ona</option>
+                    <option value="Andijon">Andijon</option>
+                    <option value="Namangan">Namangan</option>
+                    <option value="Xiva">Xiva</option>
+                    <option value="Surxondaryo">Surxondaryo</option>
+                    <option value="Navoi">Navoi</option>
+                    <option value="Qarshi">Qarshi</option>
+                    <option value="Jizzax">Jizzax</option>
+                    <option value="Xorazm">Xorazm</option>
+                </select>
+            </div>
+
+            <!-- Address -->
+            <div class="mb-3">
+                <label asp-for="Address" class="form-label fw-bold">Manzil</label>
+                <input type="text" asp-for="Address" class="form-control" placeholder="Uy manzilini yozing" />
+            </div>
+
+            <!-- Description -->
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label fw-bold">Qo`shimcha ma`lumot</label>
+                <textarea asp-for="Description" class="form-control" rows="4" placeholder="Qo'shimcha ma'lumot (qulayliklar, kamchiliklar va hokazo)"></textarea>
+            </div>
+
+            <!-- Price -->
+            <div class="mb-3">
+                <label asp-for="Price" class="form-label fw-bold">Narxi ($)</label>
+                <input type="number" asp-for="Price" class="form-control" placeholder="Narxi (AQSh dollarida)" />
+            </div>
+
+            <!-- Area -->
+            <div class="mb-3">
+                <label asp-for="Area" class="form-label fw-bold">Uy maydoni (м²)</label>
+                <input type="number" asp-for="Area" class="form-control" placeholder="Maydonini yozing" />
+            </div>
+
+            <!-- Rooms -->
+            <div class="mb-3">
+                <label asp-for="Rooms" class="form-label fw-bold">Xonalar miqdori</label>
+                <input type="number" asp-for="Rooms" class="form-control" id="rooms" placeholder="Xonalar miqdori" />
+                <div class="form-text text-danger" id="error-message-rooms" style="display: none;">
+                    Eng kamida 1 xona yozing
+                </div>
+            </div>
+
+            <!-- Floor -->
+            <div class="mb-3">
+                <label asp-for="Floor" class="form-label fw-bold">Qavat</label>
+                <input type="number" asp-for="Floor" class="form-control" placeholder="Uyning qavat joylashuvi" />
+
+            </div>
+
+            <!-- Image -->
+            <div class="mb-3">
+            <label class="form-label fw-bold">Rasmlar yuklash</label>
+                <input type="file" class="form-control" id="images" name="images" multiple accept="image/*" />
+                <div class="form-text text-danger" id="error-message" style="display: none;">
+                    Iltimos, eng kamida 3ta rasm yuklang
+                </div>
+            </div>
+
+            <!-- Phone Num -->
+            <div class="mb-3">
+                <label asp-for="PhoneNumber" class="form-label fw-bold">Telefon raqami</label>
+                <input type="number" asp-for="PhoneNumber" class="form-control" placeholder="(+998) 00 000-00-00" />
+            </div>
+
+            <button type="submit" class="btn btn-primary" id="submit-button">Yaratmoq</button>
+        </form>
+    </div>
+
+
+
+
+<script>
+    document.getElementById('submit-button').addEventListener('click', function (e) {
+        const imagesInput = document.getElementById('images');
+        const errorMessage = document.getElementById('error-message');
+
+        if (imagesInput.files.length < 3) {
+            e.preventDefault();
+            errorMessage.style.display = 'block'; // Показываем сообщение об ошибке
+        } else {
+            errorMessage.style.display = 'none'; // Скрываем сообщение, если всё ок
+        }
+    });
+
+    document.getElementById('rooms').addEventListener('input', function (e) {
+        const errorMessage = document.getElementById('error-message-rooms');
+        if (e.target.value < 1) {
+            errorMessage.style.display = 'block'; // Показываем сообщение об ошибке
+        } else {
+            errorMessage.style.display = 'none'; // Скрываем сообщение, если всё ок
+        }
+    });
+
+    document.getElementById('title').addEventListener('input', function (e) {
+        const title = e.target.value;
+        const errorMessage = document.getElementById('error-message-title');
+        if (title.length >= 27) {
+            errorMessage.style.display = 'block';
+        } else {
+            errorMessage.style.display = 'none';
+        }
+    });
+</script>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

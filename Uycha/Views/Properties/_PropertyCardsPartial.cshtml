@@ -1,0 +1,164 @@
+@model PropertyWithUserIdViewModel
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+@foreach (var property in Model.Properties)
+{
+    <div class="col-md-3 col-sm-6 d-flex mb-4 position-relative">
+        <div class="position-relative w-100">
+            @if (Model.IsAdmin || property.UserId == Model.CurrentUserId)
+            {
+                <form asp-action="Delete" asp-route-id="@property.Id" method="post"
+                      class="position-absolute top-0 end-0 m-2" style="z-index: 10;">
+                    <button type="submit" class="btn btn-sm btn-danger"
+                            onclick="return confirm('Rostdan ham ushbu e\'lonni o‘chirmoqchimisiz?');">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </form>
+            }
+            <a href="#" class="text-decoration-none w-100" data-bs-toggle="modal" data-bs-target="#modal-@property.Id">
+                <div class="card m-1 shadow d-flex flex-column property-card" data-city="@property.City"
+                     data-price="@property.Price"
+                     data-propertytype="@((int)property.PropertyType)"
+                     data-listingtype="@((int)property.ListingType)">
+                    @{
+                        var firstImage = property.ImagePaths?.Split(';').FirstOrDefault() ?? "uploads/default.png";
+                    }
+                    <img src="@Url.Content("~/"+firstImage)" alt="House Image" class="d-block w-100">
+                    <div class="card-body d-flex flex-column">
+                        @if (property.IsPremium)
+                        {
+                            <div class="premium-badge">PREMIUM</div>
+                        }
+                        <h5 class="card-title cost" style="font-weight: 800;">
+                            $@property.Price |
+                            <span style="font-weight: bolder; font-size: smaller">@property.City</span>
+                        </h5>
+                        <p class="card-text">
+                            @property.Rooms xona | @property.Floor-qavat | @property.Area m² | @property.Address
+                        </p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal-@property.Id" data-lat="@property.Latitude" data-lng="@property.Longitude" tabindex="-1" aria-labelledby="modalLabel-@property.Id" aria-hidden="true">
+        <div class="modal-dialog modal-lg mt-7">
+            <div class="modal-content p-5">
+                <div class="text-end mb-2">
+                    <a href="#" class="btn btn-lg btn-light" data-bs-dismiss="modal">
+                        <i class="fas fa-x text-dark"></i>
+                    </a>
+                </div>
+
+                <!-- Слайдер изображений -->
+                @{
+                    var images = property.ImagePaths?.Split(';') ?? new string[0];
+                }
+                <div id="carousel-@property.Id" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-indicators">
+                        @for (int i = 0; i < images.Length; i++)
+                        {
+                            <button type="button" class="@(i == 0 ? "active" : "")" data-bs-slide-to="@i"
+                                    data-bs-target="#carousel-@property.Id" aria-label="Slide @(i+1)">
+                            </button>
+                        }
+                    </div>
+                    <div class="carousel-inner">
+                        @for (int i = 0; i < images.Length; i++)
+                        {
+                            <div class="carousel-item @(i == 0 ? "active" : "")">
+                                <img src="@Url.Content("~/"+images[i])" alt="Property Image" class="d-block w-100">
+                            </div>
+                        }
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-slide="prev" data-bs-target="#carousel-@property.Id">
+                        <span class="carousel-control-prev-icon"></span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-slide="next" data-bs-target="#carousel-@property.Id">
+                        <span class="carousel-control-next-icon"></span>
+                    </button>
+                </div>
+
+                <!-- Информация о доме -->
+                <div class="container mt-4">
+                    <h4 class="text-center">Qo'shimcha ma'lumotlar</h4>
+                    <p>@property.Description</p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="list-group list-group-flush lh-lg">
+                                <li class="list-group-item"><strong>Shahar: </strong>@property.City</li>
+                                <li class="list-group-item"><strong>Manzil: </strong>@property.Address</li>
+                                <li class="list-group-item"><strong>Hajmi: </strong>@property.Area m²</li>
+                                <li class="list-group-item"><strong>Xonalar soni: </strong>@property.Rooms</li>
+                                <li class="list-group-item"><strong>Qavat: </strong>@property.Floor</li>
+                                <li class="list-group-item text-success" style="font-size: larger;"><strong>Narxi: </strong>$@property.Price</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="list-group list-group-flush lh-lg">
+                                <li class="list-group-item">
+                                    <strong>Turi: </strong> @{
+                                        string typeUz = property.PropertyType switch
+                                        {
+                                            PropertyType.Apartment => "Kvartira",
+                                            PropertyType.LandHouse => "Hovli",
+                                            PropertyType.Commercial => "Tijorat bino",
+                                            PropertyType.Land => "Yer maydoni",
+                                            _ => "Noma'lum"
+                                        };
+                                    }
+                                    @typeUz
+                                </li>
+                                <li class="list-group-item">
+                                    <strong>E'lon turi: </strong> @{
+                                        string listingUz = property.ListingType switch
+                                        {
+                                            ListingType.Sale => "Sotuv",
+                                            ListingType.Rent => "Ijara",
+                                            _ => "Noma'lum"
+                                        };
+                                    }
+                                    @listingUz
+                                </li>
+                                @if (property.ListingType == ListingType.Rent && property.RentDuration.HasValue)
+                                {
+                                    <li class="list-group-item">
+                                        <strong>Ijara muddati: </strong>@{
+                                            string rentUz = property.RentDuration switch
+                                            {
+                                                RentDuration.Daily => "Kunlik",
+                                                RentDuration.Weekly => "Haftalik",
+                                                RentDuration.Monthly => "Oylik",
+                                                RentDuration.Yearly => "Yillik",
+                                            };
+                                        }
+                                        @rentUz
+                                    </li>
+                                }
+                                <li class="list-group-item"><strong>Balkon: </strong>@(property.HasBalcony ? "Bor" : "Yo'q")</li>
+                                <li class="list-group-item"><strong>Jihozlangan: </strong>@(property.HasFurniture ? "Bor" : "Yo'q")</li>
+                                <li class="list-group-item"><strong>Isitish: </strong>@(property.HasHeating ? "Bor" : "Yo'q")</li>
+                                <li class="list-group-item"><strong>Parkovka: </strong>@(property.HasParking ? "Bor" : "Yo'q")</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div id="map-@property.Id" style="height: 300px;" class="rounded mt-4"></div>
+                    <div class="text-center mt-4">
+                        <a href="tel:@property.PhoneNumber" class="btn call btn-outline-success m-2 btn-lg">📞 Telefon</a>
+                        @if (!string.IsNullOrEmpty(property.TelegramLink))
+                        {
+                            <a href="https://t.me/@property.TelegramLink" class="btn btn-outline-primary m-2 btn-lg">
+                                <i class="fab fa-telegram"></i> Telegram
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+    
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+

@@ -1,0 +1,405 @@
+﻿@model Uycha.ViewModels.PropertyViewModel;
+
+<!-- ViewModel binding for property creation form -->
+@{
+    // Page-specific logic can go here if needed
+}
+<!-- Navigation bar -->
+<nav class="navbar navbar-expand-lg sticky-top navbar-light">
+    <div class="container">
+        <a class="navbar-brand" href="#">
+            <img src="images/photo_2025-02-20_17-05-40.jpg" alt="Site Logo" width="124" />
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+                aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link btn" asp-action="Index">Bosh sahifa</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link btn" asp-action="AllProperties">Barcha e'lonlar</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link btn" asp-action="Create">E'lon joylash</a>
+                </li>
+                <li class="nav-item justify-content-end">
+                    <a class="nav-link btn btn-outline-primary px-3 mx-2">Mening akkauntim</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Property Creation Form -->
+<form method="post" asp-action="Create" asp-controller="Properties" enctype="multipart/form-data">
+    <div class="container mt-4">
+        <h2 class="mb-4 text-primary">E'lon yaratish jarayoni</h2>
+        
+        <!-- ListingType: Продажа или аренда -->
+        <div class="mb-3">
+            <label asp-for="ListingType" class="form-label fw-bold">E'lon turi</label>
+            <select asp-for="ListingType" class="form-select" id="listingType">
+                <option value="" disabled selected>---</option>
+                <option value="Sale">Sotuv</option>
+                <option value="Rent">Ijara</option>
+            </select>
+        </div>
+
+        <!-- PropertyType: Тип недвижимости -->
+        <div class="mb-3">
+            <label asp-for="PropertyType" class="form-label fw-bold">Uy turi</label>
+            <select asp-for="PropertyType" class="form-select" id="propertyType">
+                <option value="" disabled selected>Ko'chmas mulk turini tanlang</option>
+                <option value="LandHouse">Hovli</option>
+                <option value="Apartment">Kvartira</option>
+                <option value="Land">Yer maydoni</option>
+                <option value="Commercial">Tijorat binosi</option>
+            </select>
+        </div>
+
+        <!-- RentDuration (если выбрана аренда) -->
+        <div class="mb-3" id="rentDurationField" style="display: none;">
+            <label asp-for="RentDuration" class="form-label fw-bold">Ijara muddati</label>
+            <select asp-for="RentDuration" class="form-select">
+                <option value="" disabled selected>Ijara muddatini tanlang</option>
+                <option value="0">Kunlik</option>
+                <option value="1">Haftalik</option>
+                <option value="2">Oylik</option>
+                <option value="3">Yillik</option>
+            </select>
+        </div>
+
+            
+
+            <!-- City -->
+            <div class="mb-3">
+                <label asp-for="City" class="form-label fw-bold">Shahar</label>
+                <select asp-for="City" class="form-select">
+                    <option value="" disabled selected>Shahar tanlang</option>
+                    <option value="Toshkent">Toshkent</option>
+                    <option value="Samarqand">Samarqand</option>
+                    <option value="Buxoro">Buxoro</option>
+                    <option value="Fargona">Farg`ona</option>
+                    <option value="Andijon">Andijon</option>
+                    <option value="Namangan">Namangan</option>
+                    <option value="Xiva">Xiva</option>
+                    <option value="Surxondaryo">Surxondaryo</option>
+                    <option value="Navoi">Navoi</option>
+                    <option value="Qarshi">Qarshi</option>
+                    <option value="Jizzax">Jizzax</option>
+                    <option value="Xorazm">Xorazm</option>
+                </select>
+            </div>
+
+            <!-- Address -->
+            <div class="mb-3">
+                <label asp-for="Address" class="form-label fw-bold">Manzil</label>
+                <input type="text" asp-for="Address" class="form-control" placeholder="Uy manzilini yozing" />
+            </div>
+
+            <!-- Latitude and Longitude -->
+            <div class="mb-3">
+                <label class="form-label">Lokatsiya (xaritadan joylashuv nuqtasini belgilang)</label>
+                <div id="map" style="height: 400px; border: 1px solid #ccc; border-radius: 8px;"></div>
+            </div>
+            <input asp-for="Latitude" type="hidden" class="form-control" />
+            <input asp-for="Longitude" type="hidden" class="form-control" />
+
+            <!-- Description -->
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label fw-bold">Qo'shimcha ma'lumot</label>
+                <input type="text" asp-for="Description" class="form-control" placeholder="Qo'shimcha ma'lumot bering" />
+            </div>
+
+            <!-- Price -->
+            <div class="mb-3">
+                <label asp-for="Price" class="form-label fw-bold">Narxi ($)</label>
+                <input type="number" asp-for="Price" class="form-control" placeholder="Narxi (AQSh dollarida)" />
+            </div>
+            <!-- IsNegotiable -->
+            <div class="form-check">
+                <input type="checkbox" asp-for="IsNegotiable" name="IsNegotiable" value="true" class="form-check-input">
+                <input type="hidden" name="IsNegotiable" value="false">
+                <label class="form-check-label" asp-for="IsNegotiable">Narx kelishilishi mumkin</label>
+            </div>
+
+            <!-- Area -->
+            <div class="mb-3">
+                <label asp-for="Area" class="form-label fw-bold">Maydon o'lchami (м²)</label>
+                <input type="number" asp-for="Area" class="form-control" placeholder="Maydonini yozing" />
+            </div>
+
+            <!-- Rooms -->
+            <div class="mb-3">
+                <label asp-for="Rooms" class="form-label fw-bold">Xonalar miqdori</label>
+                <input type="number" asp-for="Rooms" class="form-control" id="rooms" placeholder="Xonalar miqdori" />
+                <div class="form-text text-danger" id="error-message-rooms" style="display: none;">
+                    Eng kamida 1 xona yozing
+                </div>
+            </div>
+
+            <!-- Floor -->
+            <div class="mb-3">
+                <label asp-for="Floor" id="floor" class="form-label fw-bold">Qavat</label>
+                <input type="number" asp-for="Floor" class="form-control" placeholder="Qavat joylashuvi" />
+                <div class="form-text text-danger" id="error-message-floor" style="display: none;">
+                    Uyning qavati eng kamida 1 bo'lishi kerak
+                </div>
+                
+            </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Qo'shimcha qulayliklar</label>
+            <div class="form-check">
+                <input type="checkbox" asp-for="HasBalcony" class="form-check-input">
+                <label class="form-check-label" asp-for="HasBalcony">Balkon</label>
+            </div>
+            <div class="form-check">
+                <input type="checkbox" asp-for="HasElevator" class="form-check-input">
+                <label class="form-check-label" asp-for="HasElevator">Lift</label>
+            </div>
+            <div class="form-check">
+                <input type="checkbox" asp-for="HasFurniture" class="form-check-input">
+                <label class="form-check-label" asp-for="HasFurniture">Jihozlangan</label>
+            </div>
+            <div class="form-check">
+                <input type="checkbox" asp-for="HasHeating" class="form-check-input">
+                <label class="form-check-label" asp-for="HasHeating">Isitish tizimi</label>
+            </div>
+            <div class="form-check">
+                <input type="checkbox" asp-for="HasParking" class="form-check-input">
+                <label class="form-check-label" asp-for="HasParking">Avtoturargoh</label>
+            </div>
+            <div class="form-check">
+                <input type="checkbox" asp-for="IsPremium" class="form-check-input">
+                <label class="form-check-label" asp-for="IsPremium"><span class="text-warning">Premium</span></label>
+            </div>
+
+        </div>
+
+            <!-- Image -->
+        <div class="mb-3">
+            <label asp-for="ImageFiles" class="form-label fw-bold">Rasmlarni yuklash</label>
+            <input type="file" class="form-control" id="imageFiles" name="ImageFiles" multiple accept="image/*" onchange="handleFileUpload(event)" required />
+
+            <span asp-validation-for="ImageFiles" class="text-danger"></span>
+
+            <div class="form-text text-danger" id="error-message" style="display: none;">
+                Iltimos, eng kamida 3ta rasm yuklang
+            </div>
+
+            <!-- Предпросмотр загруженных изображений -->
+            <div id="preview-container" class="mt-2 d-flex flex-wrap"></div>
+        </div>
+
+            <!-- Phone Num -->
+            <div class="mb-3">
+                <label asp-for="PhoneNumber" class="form-label fw-bold">Telefon raqami</label>
+                <input type="number" asp-for="PhoneNumber" class="form-control" placeholder="995552211" />
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="TelegramLink" class="form-label fw-bold">Telegram username</label>
+                <input type="text" asp-for="TelegramLink" class="form-control" placeholder="Username"/>
+            </div>
+
+        <div asp-validation-summary="All" class="text-danger"></div>
+
+
+            <button type="submit" class="btn btn-primary" id="submit-button">Yaratmoq</button>
+      
+    </div>
+</form>
+
+<!-- Footer section -->
+<footer class="footer bg-dark text-white py-5 mt-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <!-- Column 1: Project info -->
+            <div class="col-md-4 m-3">
+                <h5>Uycha</h5>
+                <p>
+                    Xumoyun Bolikulov tomonidan yasalgan ped-proyekt.
+                    <br /><br />
+                    A ped-project made by Khumoyun Bolikulov.
+                </p>
+            </div>
+
+            <!-- Column 2: Contact info -->
+            <div class="col-md-4 m-3">
+                <h5>Kontaktlar</h5>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-phone-alt"></i> Telefon: +998990614497</li>
+                    <li><i class="fas fa-envelope"></i> Email: khumoyunbvb@gmail.com</li>
+                    <li><i class="fas fa-map-marker-alt"></i> Toshkent, O'zbekiston</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Social media icons -->
+        <div class="text-center mt-4">
+            <a href="#" class="text-white mx-2"><i class="fab fa-facebook"></i></a>
+            <a href="#" class="text-white mx-2"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="text-white mx-2"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="text-white mx-2"><i class="fab fa-linkedin"></i></a>
+        </div>
+    </div>
+</footer>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- Load FontAwesome icons -->
+<script src="https://kit.fontawesome.com/a076d05399.js"></script>
+
+<!-- JavaScript for image upload preview -->
+<script>
+    let selectedFiles = []; // Array of selected images
+
+    function handleFileUpload(event) {
+        const files = Array.from(event.target.files);
+        const previewContainer = document.getElementById("preview-container");
+        const errorMessage = document.getElementById("error-message");
+
+        files.forEach(file => {
+            if (!selectedFiles.some(f => f.name === file.name)) {
+                selectedFiles.push(file);
+            }
+        });
+
+        if (selectedFiles.length < 3) {
+            errorMessage.style.display = "block";
+        } else {
+            errorMessage.style.display = "none";
+        }
+
+        renderPreviews();
+    }
+
+    function removeImage(index) {
+        selectedFiles.splice(index, 1);
+        renderPreviews();
+    }
+
+    function renderPreviews() {
+        const previewContainer = document.getElementById("preview-container");
+        previewContainer.innerHTML = "";
+
+        selectedFiles.forEach((file, index) => {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const div = document.createElement("div");
+                div.classList.add("position-relative", "m-1");
+
+                const imgElement = document.createElement("img");
+                imgElement.src = e.target.result;
+                imgElement.classList.add("img-thumbnail");
+                imgElement.style.width = "110px";
+                imgElement.style.height = "110px";
+
+                const removeButton = document.createElement("button");
+                removeButton.classList.add("btn", "btn-danger", "btn-sm", "position-absolute", "top-0", "end-0");
+                removeButton.innerHTML = "×";
+                removeButton.onclick = function () {
+                    removeImage(index);
+                };
+
+                div.appendChild(imgElement);
+                div.appendChild(removeButton);
+                previewContainer.appendChild(div);
+            };
+            reader.readAsDataURL(file);
+        });
+
+        const input = document.getElementById("imageFiles");
+        const dataTransfer = new DataTransfer();
+        selectedFiles.forEach(file => dataTransfer.items.add(file));
+        input.files = dataTransfer.files;
+    }
+</script>
+
+<!-- JavaScript for dynamic form logic -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Enforce min values on number inputs
+        const enforceMin = (selector, min) => {
+            const input = document.querySelector(selector);
+            if (input) {
+                input.addEventListener("input", () => {
+                    if (parseFloat(input.value) < min) {
+                        input.value = min;
+                    }
+                });
+            }
+        };
+
+        enforceMin('input[name="Price"]', 0);
+        enforceMin('input[name="Area"]', 0);
+        enforceMin('input[name="Rooms"]', 1);
+        enforceMin('input[name="Floor"]', 1);
+
+        // Show/hide rent duration based on listing type
+        document.getElementById("listingType").addEventListener("change", function () {
+            document.getElementById("rentDurationField").style.display = this.value === "Rent" ? "block" : "none";
+        });
+
+        // Hide fields not needed for Land
+        const propertyTypeSelect = document.getElementById("propertyType");
+        propertyTypeSelect.addEventListener("change", function () {
+            const selectedType = this.value;
+            const toggleField = (id, show) => {
+                const el = document.getElementById(id);
+                if (el) el.closest(".mb-3").style.display = show ? "block" : "none";
+            };
+
+            const toggleCheckbox = (name, show) => {
+                const checkbox = document.querySelector(`input[name='${name}']`);
+                if (checkbox) checkbox.closest(".form-check").style.display = show ? "block" : "none";
+            };
+
+            const isLand = selectedType === "Land";
+
+            toggleField("rooms", !isLand);
+            toggleField("floor", !isLand);
+
+            ["HasBalcony", "HasFurniture", "HasHeating", "HasParking", "HasElevator"].forEach(name => {
+                toggleCheckbox(name, !isLand);
+            });
+        });
+    });
+</script>
+
+<script>
+    const map = L.map('map').setView([41.3111, 69.2797], 13); // Tashkent
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    let marker;
+
+    map.on('click', function (e) {
+        const lat = e.latlng.lat;
+        const lng = e.latlng.lng;
+
+        document.getElementById("Latitude").value = lat;
+        document.getElementById("Longitude").value = lng;
+
+        if (marker) {
+            marker.setLatLng([lat, lng]);
+        } else {
+            marker = L.marker([lat, lng]).addTo(map);
+        }
+    });
+</script>
+
+
+<!-- Validation scripts section -->
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

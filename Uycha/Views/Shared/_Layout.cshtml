@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Uycha</title>
+
+    <!-- Сторонние стили (CDN) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- Основной Bootstrap (локальный) -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <!-- Кастомные стили проекта -->
+    <link rel="stylesheet" href="~/css/fontawesome.css" />  <!-- Если используется отдельно -->
+    <link rel="stylesheet" href="~/css/bootstrap.css" />  <!-- Если кастомный Bootstrap -->
+    <link rel="stylesheet" href="~/css/styles.css" />
+
+    <!-- Стили ASP.NET MVC -->
+    <link rel="stylesheet" href="~/Uycha.styles.css" asp-append-version="true" />
+
+</head>
+
+<body>
+   
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+<footer class="">
+        
+</footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/js/replaceme.min.js"></script>
+    <script src="~/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/script.js"></script>
+    
+    
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,135 @@
+carousel {
+    height: 30rem;
+}
+
+.header {
+    background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.5)),
+      url('../images/header.jpeg') center center no-repeat;
+    background-size: cover;
+    height: 550px;
+  }
+
+.form-position {
+    position: absolute;
+    top: 80%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50%;
+  }
+
+.card img {
+    height: 100px;
+    object-fit: cover;
+}
+
+  #headerbtn {
+    background-color: rgb(38, 207, 185);
+  }
+
+  #mu {
+    font-weight: bold;
+    color: rgb(38, 207, 185);
+  }
+
+  .custom-shadow {
+    box-shadow: 0px 0px 25px rgba(47, 213, 235, 0.63);
+  }
+  .form-control:focus {
+    box-shadow: none !important;
+    border-color: #ced4da; /* Устанавливаем стандартный бордер */
+  }
+
+  .card {
+     /* Можно поменять на нужный размер */
+    overflow: hidden; /* Чтобы контент не выходил за границы */
+  }
+
+  .carousel-inner {
+    height: 400px; /* Фиксируем высоту карусели */
+  }
+  
+  .carousel-item img {
+    height: 60%; /* Заполняет весь блок */
+    object-fit: cover; /* Обрезает изображение, чтобы оно заполнило всю высоту */
+  }
+
+  .more-button {
+    width: 75%;
+  }
+
+@media (max-width: 992px) {
+    .xl-text {
+        font-size: 50 px;
+    }
+
+    .header {
+        text-align: center;
+        height: 400px;
+    }
+
+    .form-position {
+        top: auto; 
+        bottom: 50px; 
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80%; 
+      }
+
+    .card {
+      height: 200px; /* Можно поменять на нужный размер */
+      overflow: hidden; /* Чтобы контент не выходил за границы */
+      width: 105%;
+    }
+
+  
+
+  .card-text {
+    font-size: small;
+    font-weight: bold;
+  }
+
+  
+}
+
+@media (max-width: 768px) {
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .col-md-3 {
+    flex: 0 0 50%; /* 50% ширины экрана */
+    max-width: 50%;
+  }
+
+  .card {
+    width: 100%; /* Чтобы карточка занимала всю доступную ширину колонки */
+  }
+
+  .carousel-inner {
+    height: 280px; /* Фиксируем высоту карусели */
+  }
+
+  
+}
+
+@media (min-width: 768px) { /* sm и больше */
+  .more-button {
+    width: 30%;
+}
+}
+
+@media (min-width: 992px) { /* lg и больше */
+  .header {
+    background-position: center;
+    height: 30rem;
+  }
+  .card-text {
+    font-weight: bold;
+    font-size: medium;
+  } 
+}
+
+  
+
